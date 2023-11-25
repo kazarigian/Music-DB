@@ -78,7 +78,9 @@
                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                 <children>
                     <TextField fx:id="titleTextField" prefWidth="175.0" promptText="Title" stylesheets="@styles.css" />
-                    <TextField fx:id="genreTextField" prefWidth="175.0" promptText="Genre" stylesheets="@styles.css" />
+                    <TextField fx:id="yearTextField" prefWidth="175.0" promptText="Year" stylesheets="@styles.css" />
+                    <TextField fx:id="artistIDTextField" prefWidth="175.0" promptText="Artist ID" stylesheets="@styles.css" />
+                    <TextField fx:id="artistTextField" prefWidth="175.0" promptText="Artist" stylesheets="@styles.css" />
                 </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">

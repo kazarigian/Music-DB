@@ -4,11 +4,13 @@ public class Artist {
 
     private int id;
     private String name;
+    private String genre;
 
-    Artist(int id, String name) {
+    Artist(int id, String name, String genre) {
 
         this.id = id;
         this.name = name;
+        this.genre = genre;
     }
 
     public int getId() {
@@ -25,5 +27,13 @@ public class Artist {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+     public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 }

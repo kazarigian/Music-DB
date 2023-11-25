@@ -44,7 +44,7 @@ public class AlbumsController implements Initializable {
     private VBox vBox;
 
     @FXML
-    private TextField titleTextField, genreTextField; //where data gets entered by user
+    private TextField titleTextField, yearTextField, artistIDTextField, artistTextField; //where data gets entered by user
 
     @FXML
     Label footerLabel;
@@ -89,9 +89,17 @@ public class AlbumsController implements Initializable {
         title.setMinWidth(450);
         title.setCellValueFactory(new PropertyValueFactory<Album, String>("title"));
         
-        TableColumn genre = new TableColumn("Genre");
+        TableColumn genre = new TableColumn("Year");
         title.setMinWidth(450);
-        title.setCellValueFactory(new PropertyValueFactory<Album, String>("genre"));
+        title.setCellValueFactory(new PropertyValueFactory<Album, String>("year"));
+        
+        TableColumn artistID = new TableColumn("Artist ID");
+        title.setMinWidth(450);
+        title.setCellValueFactory(new PropertyValueFactory<Album, Integer>("artistID"));
+        
+        TableColumn artist = new TableColumn("Artist");
+        title.setMinWidth(450);
+        title.setCellValueFactory(new PropertyValueFactory<Album, String>("artist"));
         
         //tableView.setOpacity(0.3);
         /* Allow for the values in each cell to be changable */
@@ -115,8 +123,8 @@ public class AlbumsController implements Initializable {
 
             while (rs.next()) {
                 Album album;
-                album = new Album(rs.getInt("id"), rs.getString("title"), rs.getString("genre"));
-                System.out.println(album.getId() + " - " + album.getTitle() + " - " + album.getGenre());
+                album = new Album(rs.getInt("id"), rs.getString("title"), rs.getString("year"), rs.getInt("artistID"), rs.getString("artist"));
+                System.out.println(album.getId() + " - " + album.getTitle() + " - " + album.getYear()+ " - " + album.getArtistID() + " - " + album.getArtist());
                 data.add(album); //adding to record(DB) of album
             }
 
@@ -162,11 +170,13 @@ public class AlbumsController implements Initializable {
      * Insert a new row into the album table
      *
      * @param title
-     * @param genre
+     * @param year
+     * @param artistID
+     * @param artist
      * 
      * @throws java.sql.SQLException
      */
-    public void insertAlbum(String title, String genre) throws SQLException {
+    public void insertAlbum(String title, String year, int artistID, String artist) throws SQLException {
         int last_inserted_id = 0;
         Connection conn = null;
         try {
@@ -178,11 +188,13 @@ public class AlbumsController implements Initializable {
 
             System.out.println("Inserting one record!");
 
-            String sql = "INSERT INTO Albums(title, genre) VALUES(?,?)"; //values of question marks come from the variables
+            String sql = "INSERT INTO Albums(title, year, artistID, artist) VALUES(?,?,?,?)"; //values of question marks come from the variables
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, title);
-            pstmt.setString(2, genre);
+            pstmt.setString(2, year);
+            pstmt.setString(3, Integer.toString(artistID));
+            pstmt.setString(4, artist);
             ResultSet rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
                 last_inserted_id = rs.getInt(1);
@@ -200,16 +212,16 @@ public class AlbumsController implements Initializable {
         }
         System.out.println("last_inserted_id " + last_inserted_id);
   
-        data.add(new Album(last_inserted_id, title, genre));
+        data.add(new Album(last_inserted_id, title, year, artistID, artist));
     }
 
     @FXML
     public void handleAddAlbum(ActionEvent actionEvent) {
 
-        System.out.println("Title: " + titleTextField.getText() + "\nGenre: " + genreTextField.getText());//only prints in console (user doesn't see)
+        System.out.println("Title: " + titleTextField.getText() + "\nYear: " + yearTextField.getText()+ "\nArtist ID: " + artistIDTextField.getText()+ "\nArtist: " + artistTextField.getText());//only prints in console (user doesn't see)
         try {
             // insert a new rows
-            insertAlbum(titleTextField.getText(), genreTextField.getText() ); //these are the objects made to hold the input (from line 44 or 47) (use parse int for year bc read it as a string then converts to int)
+            insertAlbum(titleTextField.getText(), yearTextField.getText(), Integer.parseInt(artistIDTextField.getText()), artistTextField.getText()); //these are the objects made to hold the input (from line 44 or 47) (use parse int for year bc read it as a string then converts to int)
 
             System.out.println("Data was inserted Successfully");
         } catch (SQLException ex) {
@@ -217,7 +229,10 @@ public class AlbumsController implements Initializable {
         }
 
         titleTextField.setText("");
-        genreTextField.setText("");
+        yearTextField.setText("");
+        artistIDTextField.setText("");
+        artistTextField.setText("");
+        
         //re-seting fields after sucessfully inputing info
         footerLabel.setText("Record inserted into table successfully!");
     }
@@ -227,7 +242,9 @@ public class AlbumsController implements Initializable {
         String sql = "CREATE TABLE IF NOT EXISTS Albums (\n"
                 + "	id integer PRIMARY KEY,\n"
                 + "	title text NOT NULL,\n"
-                + "     genre text\n"
+                + "	year text NOT NULL,\n"
+                + "     artistID integer NOT NULL\n"
+                + "	artist text NOT NULL,\n"
                 + ");";
 
         try (Connection conn = DriverManager.getConnection(databaseURL);
@@ -286,7 +303,9 @@ public class AlbumsController implements Initializable {
                 Album album = (Album) tableView.getSelectionModel().getSelectedItem();
                 System.out.println("ID: " + album.getId());
                 System.out.println("Title: " + album.getTitle());
-                System.out.println("Genre: " + album.getGenre());
+                System.out.println("Year: " + album.getYear());
+                System.out.println("Artist ID: " + album.getArtistID());
+                System.out.println("Artist: " + album.getArtist());
                 deleteAlbum(album.getId(), selectedIndex);
             }
 
@@ -308,17 +327,22 @@ public class AlbumsController implements Initializable {
         Album album = (Album) tableView.getSelectionModel().getSelectedItem(); //making empty object of album then casting album type to the selectedItem
         System.out.println("ID: " + album.getId());
         System.out.println("Title: " + album.getTitle());
-        System.out.println("Genre: " + album.getGenre());
+        System.out.println("Year: " + album.getYear());
+        System.out.println("Artist ID: " + album.getArtistID());
+        System.out.println("Artist: " + album.getArtist());
         
         titleTextField.setText(album.getTitle());
+        yearTextField.setText(album.getYear());
+        artistIDTextField.setText(Integer.toString(album.getArtistID()));
+        artistTextField.setText(album.getArtist());
 
-        String content = "Id= " + album.getId() + "\nTitle= " + album.getTitle() + "\nGenre= " + album.getGenre();
+        String content = "Id= " + album.getId() + "\nTitle= " + album.getTitle() + "\nYear= " + album.getYear()+ "\nArtist ID= " + album.getArtistID()+ "\nArtist= " + album.getArtist();
 
     }
 
 
     @SuppressWarnings("empty-statement")
-    public ObservableList<Album> searchAlbum(String _title, String _genre) throws SQLException {
+    public ObservableList<Album> searchAlbum(String _title, String _year, String _artist) throws SQLException {
         ObservableList<Album> searchResult = FXCollections.observableArrayList();
         // read data from SQLite database
         CreateSQLiteTable();
@@ -327,8 +351,11 @@ public class AlbumsController implements Initializable {
         if (!_title.isEmpty()) {
             sql += " and title like '%" + _title + "%'";
         }
-        if (!_genre.isEmpty()) {
-            sql += " and genre like '%" + _genre + "%'";
+        if (!_year.isEmpty()) {
+            sql += " and year like '%" + _year + "%'";
+        }
+        if (!_artist.isEmpty()) {
+            sql += " and artist like '%" + _artist + "%'";
         }
 
         System.out.println(sql);
@@ -346,9 +373,11 @@ public class AlbumsController implements Initializable {
 
                     int recordId = rs.getInt("id");
                     String title = rs.getString("title");
-                    String genre = rs.getString("genre");
+                    String year = rs.getString("year");
+                    int artistID = rs.getInt("artistID");
+                    String artist = rs.getString("artist");
 
-                    Album album = new Album(recordId, title, genre);
+                    Album album = new Album(recordId, title, year, artistID, artist);
                     searchResult.add(album);
                 } while (rs.next());
             }
@@ -362,8 +391,9 @@ public class AlbumsController implements Initializable {
     @FXML
     private void handleSearchAlbum(ActionEvent event) throws IOException, SQLException {
         String _title = titleTextField.getText().trim();
-        String _genre = genreTextField.getText().trim();
-        ObservableList<Album> tableItems = searchAlbum(_title, _genre);
+        String _year = yearTextField.getText().trim();
+        String _artist = artistTextField.getText().trim();
+        ObservableList<Album> tableItems = searchAlbum(_title, _year, _artist);
         tableView.setItems(tableItems);
 
     }
@@ -378,20 +408,24 @@ public class AlbumsController implements Initializable {
      * Update a record in the albums table
      *
      * @param title
-     * @param genre
+     * @param year
+     * @param artistID
+     * @param artist
      * @throws java.sql.SQLException
      */
-    public void updateAlbum(String title, String genre, int selectedIndex, int id) throws SQLException {
+    public void updateAlbum(String title, String year, int artistID, String artist, int selectedIndex, int id) throws SQLException {
 
         Connection conn = null;
         try {
             // create a connection to the database
             conn = DriverManager.getConnection(databaseURL);
-            String sql = "UPDATE Albums SET title = ?, genre = ? Where id = ?";
+            String sql = "UPDATE Albums SET title = ?, year = ?, artistID = ?, artist = ? Where id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, title);
-            pstmt.setString(2, genre);
-            pstmt.setString(3, Integer.toString(id));
+            pstmt.setString(2, year);
+            pstmt.setString(3, Integer.toString(artistID));
+            pstmt.setString(4, artist);
+            pstmt.setString(5, Integer.toString(id));
 
             pstmt.executeUpdate();
             pstmt.close();
@@ -428,7 +462,7 @@ public class AlbumsController implements Initializable {
 
                 try {
                     // insert a new rows
-                    updateAlbum(titleTextField.getText(), genreTextField.getText(), selectedIndex, album.getId());
+                    updateAlbum(titleTextField.getText(), yearTextField.getText(),  Integer.parseInt(artistIDTextField.getText()), artistTextField.getText(), selectedIndex, album.getId());
 
                     System.out.println("Record updated successfully!");
                 } catch (SQLException ex) {
@@ -436,7 +470,9 @@ public class AlbumsController implements Initializable {
                 }
 
                 titleTextField.setText("");
-                genreTextField.setText("");
+                yearTextField.setText("");
+                artistIDTextField.setText("");
+                artistTextField.setText("");
 
                 footerLabel.setText("Record updated successfully!");
                 data.clear();
@@ -455,11 +491,11 @@ public class AlbumsController implements Initializable {
 
     @FXML
     private void sidebarAddNewAlbum() {
-        System.out.println("Title: " + titleTextField.getText()  + "\nGenre: " + genreTextField.getText());
+        System.out.println("Title: " + titleTextField.getText()  + "\nYear: " + yearTextField.getText()+ "\nArtist ID: " + artistIDTextField.getText()+ "\nArtist: " + artistTextField.getText());
 
         try {
             // insert a new rows
-            insertAlbum(titleTextField.getText(), genreTextField.getText());
+            insertAlbum(titleTextField.getText(), yearTextField.getText(), Integer.parseInt(artistIDTextField.getText()), artistTextField.getText());
 
             System.out.println("Data was inserted Successfully");
         } catch (SQLException ex) {
@@ -467,6 +503,9 @@ public class AlbumsController implements Initializable {
         }
 
         titleTextField.setText("");
+        yearTextField.setText("");
+        artistIDTextField.setText("");
+        artistTextField.setText("");
 
         footerLabel.setText("Record inserted into table successfully!");
 
@@ -488,7 +527,9 @@ public class AlbumsController implements Initializable {
                 Album album = (Album) tableView.getSelectionModel().getSelectedItem();
                 System.out.println("ID: " + album.getId());
                 System.out.println("Title: " + album.getTitle());
-                System.out.println("Genre: " + album.getGenre());
+                System.out.println("Year: " + album.getYear());
+                System.out.println("Artist ID: " + album.getArtistID());
+                System.out.println("Artist: " + album.getArtist());
                 deleteAlbum(album.getId(), selectedIndex);
             }
 
@@ -498,8 +539,9 @@ public class AlbumsController implements Initializable {
     @FXML
     private void sidebarSearchAlbum() throws SQLException {
         String _title = titleTextField.getText().trim();
-        String _genre = genreTextField.getText().trim();
-        ObservableList<Album> tableItems = searchAlbum(_title, _genre);
+        String _year = yearTextField.getText().trim();
+        String _artist = artistTextField.getText().trim();
+        ObservableList<Album> tableItems = searchAlbum(_title, _year, _artist);
         tableView.setItems(tableItems);
     }
 
@@ -520,7 +562,7 @@ public class AlbumsController implements Initializable {
 
                 try {
                     // insert a new rows
-                    updateAlbum(titleTextField.getText(), genreTextField.getText(), selectedIndex, album.getId());
+                    updateAlbum(titleTextField.getText(), yearTextField.getText(), Integer.parseInt(artistIDTextField.getText()), artistTextField.getText(), selectedIndex, album.getId());
 
                     System.out.println("Record updated successfully!");
                 } catch (SQLException ex) {
@@ -528,6 +570,9 @@ public class AlbumsController implements Initializable {
                 }
 
                 titleTextField.setText("");
+                yearTextField.setText("");
+                artistIDTextField.setText("");
+                artistTextField.setText("");
 
                 footerLabel.setText("Record updated successfully!");
                 data.clear();

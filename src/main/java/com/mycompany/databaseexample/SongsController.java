@@ -44,7 +44,7 @@ public class SongsController implements Initializable {
     private VBox vBox;
 
     @FXML
-    private TextField titleTextField; //where data gets entered by user
+    private TextField titleTextField, albumIDTextField, albumTextField; //where data gets entered by user
 
     @FXML
     Label footerLabel;
@@ -89,6 +89,14 @@ public class SongsController implements Initializable {
         title.setMinWidth(450);
         title.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         
+        TableColumn albumID = new TableColumn("Album ID");
+        title.setMinWidth(450);
+        title.setCellValueFactory(new PropertyValueFactory<Song, Integer>("albumID"));
+        
+        TableColumn album = new TableColumn("Album");
+        title.setMinWidth(450);
+        title.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
+        
         //tableView.setOpacity(0.3);
         /* Allow for the values in each cell to be changable */
     }
@@ -111,8 +119,8 @@ public class SongsController implements Initializable {
 
             while (rs.next()) {
                 Song song;
-                song = new Song(rs.getInt("id"), rs.getString("title"));
-                System.out.println(song.getId() + " - " + song.getTitle());
+                song = new Song(rs.getInt("id"), rs.getString("title"), rs.getInt("albumID"), rs.getString("album"));
+                System.out.println(song.getId() + " - " + song.getTitle()+ " - " + song.getAlbumID()+ " - " + song.getAlbum());
                 data.add(song); //adding to record(DB) of song
             }
 
@@ -158,10 +166,12 @@ public class SongsController implements Initializable {
      * Insert a new row into the song table
      *
      * @param title
+     * @param albumID
+     * @param album
 
      * @throws java.sql.SQLException
      */
-    public void insertSong(String title) throws SQLException {
+    public void insertSong(String title, int albumID, String album) throws SQLException {
         int last_inserted_id = 0;
         Connection conn = null;
         try {
@@ -173,10 +183,12 @@ public class SongsController implements Initializable {
 
             System.out.println("Inserting one record!");
 
-            String sql = "INSERT INTO Songs(title) VALUES(?)"; //values of question marks come from the variables
+            String sql = "INSERT INTO Songs(title, albumID, album) VALUES(?,?,?)"; //values of question marks come from the variables
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, title);
+            pstmt.setString(2, Integer.toString(albumID));
+            pstmt.setString(3, album);
             ResultSet rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
                 last_inserted_id = rs.getInt(1);
@@ -194,16 +206,16 @@ public class SongsController implements Initializable {
         }
         System.out.println("last_inserted_id " + last_inserted_id);
   
-        data.add(new Song(last_inserted_id, title));
+        data.add(new Song(last_inserted_id, title, albumID, album));
     }
 
     @FXML
     public void handleAddSong(ActionEvent actionEvent) {
 
-        System.out.println("Title: " + titleTextField.getText());//only prints in console (user doesn't see)
+        System.out.println("Title: " + titleTextField.getText() + "\nAlbum ID: " + albumIDTextField.getText() + "\nAlbum: " + albumTextField.getText());//only prints in console (user doesn't see)
         try {
             // insert a new rows
-            insertSong(titleTextField.getText()); //these are the objects made to hold the input (from line 44 or 47) (use parse int for year bc read it as a string then converts to int)
+            insertSong(titleTextField.getText(), Integer.parseInt(albumIDTextField.getText()), albumTextField.getText()); //these are the objects made to hold the input (from line 44 or 47) (use parse int for year bc read it as a string then converts to int)
 
             System.out.println("Data was inserted Successfully");
         } catch (SQLException ex) {
@@ -211,6 +223,9 @@ public class SongsController implements Initializable {
         }
 
         titleTextField.setText("");
+        albumIDTextField.setText("");
+        albumTextField.setText("");
+        
         //re-seting fields after sucessfully inputing info
         footerLabel.setText("Record inserted into table successfully!");
     }
@@ -219,7 +234,9 @@ public class SongsController implements Initializable {
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS Songs (\n"
                 + "	id integer PRIMARY KEY,\n"
-                + "	title text NOT NULL,\n"
+                + "	title text NOT NULL, \n"
+                + "     albumID integer NOT NULL\n"
+                + "	album text NOT NULL,\n"
                 + ");";
 
         try (Connection conn = DriverManager.getConnection(databaseURL);
@@ -278,6 +295,8 @@ public class SongsController implements Initializable {
                 Song song = (Song) tableView.getSelectionModel().getSelectedItem();
                 System.out.println("ID: " + song.getId());
                 System.out.println("Title: " + song.getTitle());
+                System.out.println("AlbumID: " + song.getAlbumID());
+                System.out.println("Album: " + song.getAlbum());
                 deleteSong(song.getId(), selectedIndex);
             }
 
@@ -299,16 +318,21 @@ public class SongsController implements Initializable {
         Song song = (Song) tableView.getSelectionModel().getSelectedItem(); //making empty object of song then casting song type to the selectedItem
         System.out.println("ID: " + song.getId());
         System.out.println("Title: " + song.getTitle());
+        System.out.println("Album ID: " + song.getAlbumID());
+        System.out.println("Album: " + song.getAlbum());
         
         titleTextField.setText(song.getTitle());
+        albumIDTextField.setText(Integer.toString(song.getAlbumID()));
+        albumTextField.setText(song.getAlbum());
 
-        String content = "Id= " + song.getId() + "\nTitle= " + song.getTitle();
+        String content = "Id= " + song.getId() + "\nTitle= " + song.getTitle() + "\nAlbum ID= " + song.getAlbumID() + "\nAlbum= " + song.getAlbum();
+        
 
     }
 
 
     @SuppressWarnings("empty-statement")
-    public ObservableList<Song> searchSong(String _title) throws SQLException {
+    public ObservableList<Song> searchSong(String _title, String _album) throws SQLException {
         ObservableList<Song> searchResult = FXCollections.observableArrayList();
         // read data from SQLite database
         CreateSQLiteTable();
@@ -316,6 +340,9 @@ public class SongsController implements Initializable {
 
         if (!_title.isEmpty()) {
             sql += " and title like '%" + _title + "%'";
+        }
+        if (!_album.isEmpty()) {
+            sql += " and genre like '%" + _album + "%'";
         }
 
         System.out.println(sql);
@@ -333,8 +360,10 @@ public class SongsController implements Initializable {
 
                     int recordId = rs.getInt("id");
                     String title = rs.getString("title");
+                    int albumID = rs.getInt("albumID");
+                    String album = rs.getString("album");
 
-                    Song song = new Song(recordId, title);
+                    Song song = new Song(recordId, title, albumID, album);
                     searchResult.add(song);
                 } while (rs.next());
             }
@@ -348,7 +377,8 @@ public class SongsController implements Initializable {
     @FXML
     private void handleSearchSong(ActionEvent event) throws IOException, SQLException {
         String _title = titleTextField.getText().trim();
-        ObservableList<Song> tableItems = searchSong(_title);
+        String _album = albumTextField.getText().trim();
+        ObservableList<Song> tableItems = searchSong(_title, _album);
         tableView.setItems(tableItems);
 
     }
@@ -365,15 +395,17 @@ public class SongsController implements Initializable {
      * @param title
      * @throws java.sql.SQLException
      */
-    public void updateSong(String title, int selectedIndex, int id) throws SQLException {
+    public void updateSong(String title, int albumID, String album, int selectedIndex, int id) throws SQLException {
 
         Connection conn = null;
         try {
             // create a connection to the database
             conn = DriverManager.getConnection(databaseURL);
-            String sql = "UPDATE Songs SET title = ? Where id = ?";
+            String sql = "UPDATE Songs SET title = ?, albumID = ?, album = ? Where id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, title);
+            pstmt.setString(2, Integer.toString(albumID));
+            pstmt.setString(3, album);
             pstmt.setString(4, Integer.toString(id));
 
             pstmt.executeUpdate();
@@ -411,7 +443,7 @@ public class SongsController implements Initializable {
 
                 try {
                     // insert a new rows
-                    updateSong(titleTextField.getText(), selectedIndex, song.getId());
+                    updateSong(titleTextField.getText(),  Integer.parseInt(albumIDTextField.getText()), albumTextField.getText(), selectedIndex, song.getId());
 
                     System.out.println("Record updated successfully!");
                 } catch (SQLException ex) {
@@ -419,6 +451,8 @@ public class SongsController implements Initializable {
                 }
 
                 titleTextField.setText("");
+                albumIDTextField.setText("");
+                albumTextField.setText("");
 
                 footerLabel.setText("Record updated successfully!");
                 data.clear();
@@ -437,11 +471,11 @@ public class SongsController implements Initializable {
 
     @FXML
     private void sidebarAddNewSong() {
-        System.out.println("Title: " + titleTextField.getText());
+        System.out.println("Title: " + titleTextField.getText() + "Album ID: " + albumIDTextField.getText() + "Album: " + albumTextField.getText());
 
         try {
             // insert a new rows
-            insertSong(titleTextField.getText());
+            insertSong(titleTextField.getText(),  Integer.parseInt(albumIDTextField.getText()), albumTextField.getText());
 
             System.out.println("Data was inserted Successfully");
         } catch (SQLException ex) {
@@ -470,6 +504,8 @@ public class SongsController implements Initializable {
                 Song song = (Song) tableView.getSelectionModel().getSelectedItem();
                 System.out.println("ID: " + song.getId());
                 System.out.println("Title: " + song.getTitle());
+                System.out.println("Album ID: " + song.getAlbumID());
+                System.out.println("Album: " + song.getAlbum());
                 deleteSong(song.getId(), selectedIndex);
             }
 
@@ -479,7 +515,8 @@ public class SongsController implements Initializable {
     @FXML
     private void sidebarSearchSong() throws SQLException {
         String _title = titleTextField.getText().trim();
-        ObservableList<Song> tableItems = searchSong(_title);
+        String _album = albumTextField.getText().trim();
+        ObservableList<Song> tableItems = searchSong(_title, _album);
         tableView.setItems(tableItems);
     }
 
@@ -500,7 +537,7 @@ public class SongsController implements Initializable {
 
                 try {
                     // insert a new rows
-                    updateSong(titleTextField.getText(), selectedIndex, song.getId());
+                    updateSong(titleTextField.getText(), Integer.parseInt(albumIDTextField.getText()), albumTextField.getText(), selectedIndex, song.getId());
 
                     System.out.println("Record updated successfully!");
                 } catch (SQLException ex) {
@@ -508,6 +545,8 @@ public class SongsController implements Initializable {
                 }
 
                 titleTextField.setText("");
+                albumIDTextField.setText("");
+                albumTextField.setText("");
 
                 footerLabel.setText("Record updated successfully!");
                 data.clear();

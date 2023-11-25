@@ -78,6 +78,8 @@
                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                 <children>
                     <TextField fx:id="titleTextField" prefWidth="175.0" promptText="Title" stylesheets="@styles.css" />
+                    <TextField fx:id="albumIDTextField" prefWidth="175.0" promptText="Album ID" stylesheets="@styles.css" />
+                    <TextField fx:id="albumTextField" prefWidth="175.0" promptText="Album" stylesheets="@styles.css" />
                 </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
