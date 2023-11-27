@@ -35,7 +35,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 
-public class ArtistsController implements Initializable {
+public class ArtistsController1 implements Initializable {
 
     @FXML
     private TableView tableView;
@@ -49,7 +49,7 @@ public class ArtistsController implements Initializable {
     @FXML
     Label footerLabel;
     @FXML
-   TableColumn id = new TableColumn("ID");
+    TableColumn id = new TableColumn("ID");
 
     @Override
     public void initialize(URL location, ResourceBundle rb) {
@@ -76,11 +76,12 @@ public class ArtistsController implements Initializable {
     */
     
     
-    public ArtistsController() throws SQLException {
+    public ArtistsController1() throws SQLException {
         this.data = FXCollections.observableArrayList(); //a moveable list of artist
     }
 
     private void intializeColumns() {
+        //make sure to add comments  here
         id = new TableColumn("ID");
         id.setMinWidth(50);
         id.setCellValueFactory(new PropertyValueFactory<Artist, Integer>("id"));
@@ -88,14 +89,15 @@ public class ArtistsController implements Initializable {
         TableColumn name = new TableColumn("Name");
         name.setMinWidth(450);
         name.setCellValueFactory(new PropertyValueFactory<Artist, String>("name"));
-        
+
         TableColumn genre = new TableColumn("Genre");
-        genre.setMinWidth(450);
+        genre.setMinWidth(100);
         genre.setCellValueFactory(new PropertyValueFactory<Artist, String>("genre"));
-        
         
         tableView.setItems(data);
         tableView.getColumns().addAll(id, name, genre);
+
+        
         //tableView.setOpacity(0.3);
         /* Allow for the values in each cell to be changable */
     }
@@ -120,7 +122,7 @@ public class ArtistsController implements Initializable {
                 Artist artist;
                 artist = new Artist(rs.getInt("id"), rs.getString("name"), rs.getString("genre"));
                 System.out.println(artist.getId() + " - " + artist.getName() + " - " + artist.getGenre());
-                data.add(artist); //adding to record(DB) of artist
+                data.add(artist); //adding to record(DB) of artists
             }
 
             rs.close(); //if you open a connection should close it too
@@ -141,8 +143,13 @@ public class ArtistsController implements Initializable {
         //Drawing a text 
         Text text = new Text("The Artist Database");
 
+        //Setting the font of the text 
         text.setFont(Font.font("Edwardian Script ITC", 55));
 
+        //Setting the position of the text 
+//        text.setX(600);
+//        text.setY(100);
+        //Setting the linear gradient 
         Stop[] stops = new Stop[]{
             new Stop(0, Color.DARKSLATEBLUE),
             new Stop(1, Color.RED)
@@ -161,6 +168,7 @@ public class ArtistsController implements Initializable {
      *
      * @param name
      * @param genre
+
      * @throws java.sql.SQLException
      */
     public void insertArtist(String name, String genre) throws SQLException {
@@ -175,7 +183,7 @@ public class ArtistsController implements Initializable {
 
             System.out.println("Inserting one record!");
 
-            String sql = "INSERT INTO Artists(name, genre) VALUES(?,?)"; //values of question marks come from the variables
+            String sql = "INSERT INTO Artists (name,genre) VALUES(?,?)"; //values of question marks come from the variables
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, name);
@@ -204,7 +212,8 @@ public class ArtistsController implements Initializable {
     @FXML
     public void handleAddArtist(ActionEvent actionEvent) {
 
-        System.out.println("Name: " + nameTextField.getText() + "Genre: " + genreTextField.getText());//only prints in console (user doesn't see)
+        System.out.println("Name: " + nameTextField.getText() + "\nGenre: " + genreTextField.getText());//only prints in console (user doesn't see)
+
         try {
             // insert a new rows
             insertArtist(nameTextField.getText(), genreTextField.getText()); //these are the objects made to hold the input (from line 44 or 47) (use parse int for year bc read it as a string then converts to int)
@@ -216,30 +225,27 @@ public class ArtistsController implements Initializable {
 
         nameTextField.setText("");
         genreTextField.setText("");
-        
+
         //re-seting fields after sucessfully inputing info
         footerLabel.setText("Record inserted into table successfully!");
     }
 
     private void CreateSQLiteTable() {
         // SQL statement for creating a new table
-      //  /*
         String sql = "CREATE TABLE IF NOT EXISTS Artists (\n"
                 + "	id integer PRIMARY KEY,\n"
                 + "	name text,\n"
-                + "	genre text\n"
+                + "	genre text,\n"
                 + ");";
 
         try (Connection conn = DriverManager.getConnection(databaseURL);
                 Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(sql);
-            
             System.out.println("Table Created Successfully");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } 
-    //    */
+        }
     }
 
     public void deleteArtist(int id, int selectedIndex) { //id to remove from DB, selectedIndex to remove from table
@@ -310,7 +316,7 @@ public class ArtistsController implements Initializable {
         System.out.println("ID: " + artist.getId());
         System.out.println("Name: " + artist.getName());
         System.out.println("Genre: " + artist.getGenre());
-        
+
         nameTextField.setText(artist.getName());
         genreTextField.setText(artist.getGenre());
 
@@ -329,9 +335,10 @@ public class ArtistsController implements Initializable {
         if (!_name.isEmpty()) {
             sql += " and name like '%" + _name + "%'";
         }
-        if (!_genre.isEmpty()) {
-            sql += " and genre like '%" + _genre + "%'";
+        if (! _genre.isEmpty()) {
+            sql += " and genre ='" + _genre + "'";
         }
+
 
         System.out.println(sql);
         try (Connection conn = DriverManager.getConnection(databaseURL);
@@ -365,6 +372,7 @@ public class ArtistsController implements Initializable {
     private void handleSearchArtist(ActionEvent event) throws IOException, SQLException {
         String _name = nameTextField.getText().trim();
         String _genre = genreTextField.getText().trim();
+
         ObservableList<Artist> tableItems = searchArtist(_name, _genre);
         tableView.setItems(tableItems);
 
@@ -377,39 +385,43 @@ public class ArtistsController implements Initializable {
     }
 
     /**
-     * Update a record in the artists table
+     * Update a record in the artist table
      *
      * @param name
      * @param genre
+
      * @throws java.sql.SQLException
      */
     public void updateArtist(String name, String genre, int selectedIndex, int id) throws SQLException {
 
-        Connection conn = null;
+
+    Connection conn = null;
+    try {
+        // create a connection to the database
+        conn = DriverManager.getConnection(databaseURL);
+        String sql = "UPDATE Artists SET name = ?, genre = ? WHERE id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, name);
+        pstmt.setString(2, genre);
+        pstmt.setInt(3, id);
+
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        System.out.println(e.getMessage());
+    } finally {
         try {
-            // create a connection to the database
-            conn = DriverManager.getConnection(databaseURL);
-            String sql = "UPDATE Artists SET name = ?, genre = ? Where id = ?";
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, name);
-            pstmt.setString(2, genre);
-            pstmt.setInt(3, id);
-
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+            if (conn != null) {
+                conn.close();
             }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
         }
-
     }
+
+}
+
+
+   
 
     @FXML
     private void handleUpdateArtist(ActionEvent event) throws IOException, SQLException {
@@ -428,7 +440,7 @@ public class ArtistsController implements Initializable {
 
                 try {
                     // insert a new rows
-                    updateArtist(nameTextField.getText(), genreTextField.getText(), selectedIndex, artist.getId());
+                    updateArtist(nameTextField.getText(), genreTextField.getText() , selectedIndex, artist.getId());
 
                     System.out.println("Record updated successfully!");
                 } catch (SQLException ex) {
@@ -455,7 +467,7 @@ public class ArtistsController implements Initializable {
 
     @FXML
     private void sidebarAddNewArtist() {
-        System.out.println("Name: " + nameTextField.getText()+ "\nGenre: " + genreTextField.getText());
+        System.out.println("Name: " + nameTextField.getText() + "\nGenre: " + genreTextField.getText());
 
         try {
             // insert a new rows
@@ -500,6 +512,7 @@ public class ArtistsController implements Initializable {
     private void sidebarSearchArtist() throws SQLException {
         String _name = nameTextField.getText().trim();
         String _genre = genreTextField.getText().trim();
+
         ObservableList<Artist> tableItems = searchArtist(_name, _genre);
         tableView.setItems(tableItems);
     }

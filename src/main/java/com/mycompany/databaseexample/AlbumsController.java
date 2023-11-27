@@ -49,7 +49,7 @@ public class AlbumsController implements Initializable {
     @FXML
     Label footerLabel;
     @FXML
-    TableColumn id = new TableColumn("ID");
+   // TableColumn id = new TableColumn("ID");
 
     @Override
     public void initialize(URL location, ResourceBundle rb) {
@@ -63,7 +63,7 @@ public class AlbumsController implements Initializable {
         CreateSQLiteTable();
     }
 
-    String databaseURL = "jdbc:sqlite:src/main/resources/com/mycompany/databaseexample/hop.db";
+    String databaseURL = "jdbc:sqlite:src/main/resources/com/mycompany/databaseexample/msc.db";
 
     /* Connect to a sample database
      */
@@ -81,26 +81,29 @@ public class AlbumsController implements Initializable {
     }
 
     private void intializeColumns() {
-        id = new TableColumn("ID");
+        TableColumn id = new TableColumn("ID");
         id.setMinWidth(50);
-        id.setCellValueFactory(new PropertyValueFactory<Album, Integer>("id"));
+        id.setCellValueFactory(new PropertyValueFactory<Artist, Integer>("id"));
 
         TableColumn title = new TableColumn("Title");
         title.setMinWidth(450);
         title.setCellValueFactory(new PropertyValueFactory<Album, String>("title"));
         
-        TableColumn genre = new TableColumn("Year");
-        title.setMinWidth(450);
-        title.setCellValueFactory(new PropertyValueFactory<Album, String>("year"));
+        TableColumn year = new TableColumn("Year");
+        year.setMinWidth(450);
+        year.setCellValueFactory(new PropertyValueFactory<Album, String>("year"));
         
         TableColumn artistID = new TableColumn("Artist ID");
-        title.setMinWidth(450);
-        title.setCellValueFactory(new PropertyValueFactory<Album, Integer>("artistID"));
+        artistID.setMinWidth(450);
+        artistID.setCellValueFactory(new PropertyValueFactory<Album, Integer>("artistID"));
         
         TableColumn artist = new TableColumn("Artist");
-        title.setMinWidth(450);
-        title.setCellValueFactory(new PropertyValueFactory<Album, String>("artist"));
+        artist.setMinWidth(450);
+        artist.setCellValueFactory(new PropertyValueFactory<Album, String>("artist"));
         
+        
+        tableView.setItems(data);
+        tableView.getColumns().addAll(id, title, year, artistID, artist);
         //tableView.setOpacity(0.3);
         /* Allow for the values in each cell to be changable */
     }
@@ -195,6 +198,7 @@ public class AlbumsController implements Initializable {
             pstmt.setString(2, year);
             pstmt.setString(3, Integer.toString(artistID));
             pstmt.setString(4, artist);
+            pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
                 last_inserted_id = rs.getInt(1);
@@ -239,12 +243,12 @@ public class AlbumsController implements Initializable {
 
     private void CreateSQLiteTable() {
         // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS Albums (\n"
+        String sql = "CREATE TABLE IF NOT EXISTS albums (\n"
                 + "	id integer PRIMARY KEY,\n"
-                + "	title text NOT NULL,\n"
-                + "	year text NOT NULL,\n"
-                + "     artistID integer NOT NULL\n"
-                + "	artist text NOT NULL,\n"
+                + "	title text,\n"
+                + "	year text,\n"
+                + "     artistID integer,\n"
+                + "	artist text \n"
                 + ");";
 
         try (Connection conn = DriverManager.getConnection(databaseURL);
@@ -423,13 +427,12 @@ public class AlbumsController implements Initializable {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, title);
             pstmt.setString(2, year);
-            pstmt.setString(3, Integer.toString(artistID));
+            pstmt.setInt(3, artistID);
             pstmt.setString(4, artist);
-            pstmt.setString(5, Integer.toString(id));
+            pstmt.setInt(5, id);
 
             pstmt.executeUpdate();
-            pstmt.close();
-            conn.close();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
