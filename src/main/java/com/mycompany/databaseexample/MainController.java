@@ -36,7 +36,7 @@ public class MainController {
 
         try {
             //contentScene.setRoot(fxmlLoader1.load());
-            Pane newLoadedPane = FXMLLoader.load(getClass().getResource("album.fxml"));
+            Pane newLoadedPane = FXMLLoader.load(getClass().getResource("albumView.fxml"));
             contentPane.getChildren().clear();
             contentPane.getChildren().add(newLoadedPane);
 
@@ -52,7 +52,7 @@ public class MainController {
     private void songs() throws IOException {
 
         try {
-            Pane newLoadedPane = FXMLLoader.load(getClass().getResource("song.fxml"));
+            Pane newLoadedPane = FXMLLoader.load(getClass().getResource("songView.fxml"));
             contentPane.getChildren().clear();
             contentPane.getChildren().add(newLoadedPane);
 
@@ -66,7 +66,7 @@ public class MainController {
     private void artists() throws IOException {
 
         try {
-            Pane newLoadedPane = FXMLLoader.load(getClass().getResource("artist.fxml"));
+            Pane newLoadedPane = FXMLLoader.load(getClass().getResource("artistView.fxml"));
             contentPane.getChildren().clear();
             contentPane.getChildren().add(newLoadedPane);
 

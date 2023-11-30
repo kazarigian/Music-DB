@@ -12,11 +12,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.databaseexample.AlbumsController">
+<BorderPane prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.databaseexample.AlbumController">
     <top>
         <BorderPane styleClass="header-section" stylesheets="@demo.css">
             <left>
-                <Label id="header-text" text="Database Application Using Java FXML" />
+                <Label id="header-text" text="Databae Application Using Java FXML" />
             </left>
             <right>
                 <Button id="account" text="Account">
@@ -67,19 +67,20 @@
     <center>
         <VBox fx:id="vBox" minHeight="500.0" prefHeight="500.0" styleClass="content-section">
             <children>
-                <Label id="content-header" stylesheets="@demo.css" text="Albums Database Application Test" textFill="#11c3c6" />
+                <Label id="content-header" stylesheets="@demo.css" text="Album Database Application Test" textFill="#11c3c6" />
             
                 <!-- container using pref size as max size to not grow larger than the image -->
                 <VBox maxHeight="-Infinity" maxWidth="-Infinity" styleClass="my-rect" stylesheets="@demo.css" />  
             
             
-               <TableView fx:id="tableView" onMouseClicked="#showAlbumData" prefHeight="547.0" prefWidth="600.0" />
+                <Label id="content" styleClass="content-section" stylesheets="@demo.css" text="This application uses SQLite and allows adding records, deleting records, searching records, and updating records" />
+                <TableView fx:id="tableView" onMouseClicked="#showAlbumData" prefHeight="547.0" prefWidth="600.0" />
                 
                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                 <children>
                     <TextField fx:id="titleTextField" prefWidth="175.0" promptText="Title" stylesheets="@styles.css" />
                     <TextField fx:id="yearTextField" prefWidth="175.0" promptText="Year" stylesheets="@styles.css" />
-                    <TextField fx:id="artistIDTextField" prefWidth="175.0" promptText="Artist ID" stylesheets="@styles.css" />
+                    <TextField fx:id="artistIDTextField" prefWidth="175.0" promptText="ArtistID" stylesheets="@styles.css" />
                     <TextField fx:id="artistTextField" prefWidth="175.0" promptText="Artist" stylesheets="@styles.css" />
                 </children>
             </HBox>
@@ -88,7 +89,7 @@
                     <Button mnemonicParsing="false" onAction="#handleAddAlbum" prefHeight="34.0" prefWidth="136.0" styleClass="btn-primary" stylesheets="@styles.css" text="Add New Album" />
                     <Button mnemonicParsing="false" onAction="#handleDeleteAlbum" prefHeight="34.0" prefWidth="116.0" styleClass="btn-danger" stylesheets="@styles.css" text="Delete Album " />
                   <Button mnemonicParsing="false" onAction="#handleSearchAlbum" prefHeight="34.0" prefWidth="99.0" styleClass="btn-warning" stylesheets="@styles.css" text="Search" />
-                  <Button mnemonicParsing="false" onAction="#handleShowAllAlbums" prefHeight="34.0" prefWidth="136.0" styleClass="btn-success" stylesheets="@styles.css" text="Show All Album" />
+                  <Button mnemonicParsing="false" onAction="#handleShowAllAlbums" prefHeight="34.0" prefWidth="136.0" styleClass="btn-success" stylesheets="@styles.css" text="Show All Albums" />
                   <Button mnemonicParsing="false" onAction="#handleUpdateAlbum" prefHeight="34.0" prefWidth="136.0" styleClass="btn-info" stylesheets="@styles.css" text="Update" />
                     
                 </children>
@@ -104,7 +105,7 @@
     <bottom>
         <HBox id="footer-section" alignment="CENTER" minHeight="100.0" prefHeight="100.0" prefWidth="853.0" BorderPane.alignment="CENTER">
             <children>
-                <Label fx:id="footerLabel" alignment="CENTER" prefHeight="31.0" prefWidth="313.0" styleClass="footer" stylesheets="@demo.css" text="">
+                <Label fx:id="footerLabel" alignment="CENTER" prefHeight="31.0" prefWidth="313.0" styleClass="footer" stylesheets="@demo.css" text="Copyright 2022 Dr. Samir Hamada">
                     <font>
                         <Font name="Arial" size="12.0" />
                     </font>

@@ -1,19 +1,20 @@
 package com.mycompany.databaseexample;
 
 public class Song {
+
     private int id;
     private String title;
     private int albumID;
     private String album;
-    
-     Song(int id, String title, int albumID, String album) {
+
+    Song(int id, String title, int albumID, String album) {
 
         this.id = id;
         this.title = title;
         this.albumID = albumID;
         this.album = album;
     }
-     
+
     /**
      * @return the id
      */
@@ -27,7 +28,6 @@ public class Song {
     public void setId(int id) {
         this.id = id;
     }
-
     /**
      * @return the title
      */
@@ -42,21 +42,14 @@ public class Song {
         this.title = title;
     }
 
-  
-    /**
-     * @return the albumID
-     */
-    public int getAlbumID() {
+     public int getAlbumID() {
         return albumID;
     }
 
-    /**
-     * @param albumID the albumID to set
-     */
     public void setAlbumID(int albumID) {
         this.albumID = albumID;
     }
-
+    
     /**
      * @return the album
      */
@@ -70,6 +63,4 @@ public class Song {
     public void setAlbum(String album) {
         this.album = album;
     }
-   
-
 }

@@ -18,15 +18,15 @@
         <menus>
           <Menu mnemonicParsing="false" text="Databases">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#songs" text="Songs" />
+              <MenuItem mnemonicParsing="false" onAction="#artists" text="Artists" />
             </items>
             
              <items>
-              <MenuItem mnemonicParsing="false" onAction="#artists" text="Artist" />
+              <MenuItem mnemonicParsing="false" onAction="#albums" text="Albums" />
             </items>
             
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#albums" text="Albums" />
+              <MenuItem mnemonicParsing="false" onAction="#songs" text="Songs" />
             </items>
             
           </Menu>

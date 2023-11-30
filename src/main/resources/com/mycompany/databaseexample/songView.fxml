@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.databaseexample.ArtistsController">
+<BorderPane prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.databaseexample.SongController">
     <top>
         <BorderPane styleClass="header-section" stylesheets="@demo.css">
             <left>
@@ -34,31 +34,28 @@
     <left>
         <VBox prefHeight="500.0" prefWidth="192.0" styleClass="sidebar-section">
             <children>
-                <Label onMouseClicked="#sidebarAddNewArtist" styleClass="btn-primary" text="Add New Artist">
+                <Label onMouseClicked="#sidebarAddNewSong" styleClass="btn-primary" text="Add New Song">
                <stylesheets>
                   <URL value="@demo.css" />
                   <URL value="@styles.css" />
-               </stylesheets>
-                </Label>
-                <Label onMouseClicked="#sidebarDeleteArtist" styleClass="btn-danger" text="Delete Artist ">
+               </stylesheets></Label>
+                <Label onMouseClicked="#sidebarDeleteSong" styleClass="btn-danger" text="Delete Song ">
                <stylesheets>
                   <URL value="@demo.css" />
                   <URL value="@styles.css" />
-               </stylesheets>
-                </Label>
-            <Label onMouseClicked="#sidebarSearchArtist" styleClass="btn-warning" text="Search">
+               </stylesheets></Label>
+            <Label onMouseClicked="#sidebarSearchSong" styleClass="btn-warning" text="Search">
                <stylesheets>
                   <URL value="@demo.css" />
                   <URL value="@styles.css" />
                </stylesheets>
             </Label>
-                <Label onMouseClicked="#sidebarShowAllArtists" styleClass="btn-success" text="Show All Artists">
+                <Label onMouseClicked="#sidebarShowAllSongs" styleClass="btn-success" text="Show All Records">
                <stylesheets>
                   <URL value="@demo.css" />
                   <URL value="@styles.css" />
-               </stylesheets>
-                </Label>
-            <Label onMouseClicked="#sidebarUpdateArtist" styleClass="btn-info" text="Update">
+               </stylesheets></Label>
+            <Label onMouseClicked="#sidebarUpdateSong" styleClass="btn-info" text="Update">
                <stylesheets>
                   <URL value="@demo.css" />
                   <URL value="@styles.css" />
@@ -70,28 +67,29 @@
     <center>
         <VBox fx:id="vBox" minHeight="500.0" prefHeight="500.0" styleClass="content-section">
             <children>
-                <Label id="content-header" stylesheets="@demo.css" text="Artists Database Application Test" textFill="#11c3c6" />
+                <Label id="content-header" stylesheets="@demo.css" text="Songs Database Application Test" textFill="#11c3c6" />
             
                 <!-- container using pref size as max size to not grow larger than the image -->
                 <VBox maxHeight="-Infinity" maxWidth="-Infinity" styleClass="my-rect" stylesheets="@demo.css" />  
             
             
-      
-                <TableView fx:id="tableView" onMouseClicked="#showArtistData" prefHeight="547.0" prefWidth="600.0" />
+                <Label id="content" styleClass="content-section" stylesheets="@demo.css" text="This application uses SQLite and allows adding records, deleting records, searching records, and updating records" />
+                <TableView fx:id="tableView" onMouseClicked="#showSongData" prefHeight="547.0" prefWidth="600.0" />
                 
                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                 <children>
-                    <TextField fx:id="nameTextField" prefWidth="175.0" promptText="Name" stylesheets="@styles.css" />
-                    <TextField fx:id="genreTextField" prefWidth="175.0" promptText="Genre" stylesheets="@styles.css" />
+                    <TextField fx:id="titleTextField" prefWidth="175.0" promptText="Title" stylesheets="@styles.css" />
+                    <TextField fx:id="albumIDTextField" prefWidth="175.0" promptText="AlbumID" stylesheets="@styles.css" />
+                    <TextField fx:id="albumTextField" prefWidth="175.0" promptText="Album" stylesheets="@styles.css" />
                 </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                 <children>
-                    <Button mnemonicParsing="false" onAction="#handleAddArtist" prefHeight="34.0" prefWidth="136.0" styleClass="btn-primary" stylesheets="@styles.css" text="Add New Artist" />
-                    <Button mnemonicParsing="false" onAction="#handleDeleteArtist" prefHeight="34.0" prefWidth="116.0" styleClass="btn-danger" stylesheets="@styles.css" text="Delete Artist " />
-                  <Button mnemonicParsing="false" onAction="#handleSearchArtist" prefHeight="34.0" prefWidth="99.0" styleClass="btn-warning" stylesheets="@styles.css" text="Search" />
-                  <Button mnemonicParsing="false" onAction="#handleShowAllArtists" prefHeight="34.0" prefWidth="136.0" styleClass="btn-success" stylesheets="@styles.css" text="Show All Artist" />
-                  <Button mnemonicParsing="false" onAction="#handleUpdateArtist" prefHeight="34.0" prefWidth="136.0" styleClass="btn-info" stylesheets="@styles.css" text="Update" />
+                    <Button mnemonicParsing="false" onAction="#handleAddSong" prefHeight="34.0" prefWidth="136.0" styleClass="btn-primary" stylesheets="@styles.css" text="Add New Song" />
+                    <Button mnemonicParsing="false" onAction="#handleDeleteSong" prefHeight="34.0" prefWidth="116.0" styleClass="btn-danger" stylesheets="@styles.css" text="Delete Song " />
+                  <Button mnemonicParsing="false" onAction="#handleSearchSong" prefHeight="34.0" prefWidth="99.0" styleClass="btn-warning" stylesheets="@styles.css" text="Search" />
+                  <Button mnemonicParsing="false" onAction="#handleShowAllSongs" prefHeight="34.0" prefWidth="136.0" styleClass="btn-success" stylesheets="@styles.css" text="Show All Records" />
+                  <Button mnemonicParsing="false" onAction="#handleUpdateSong" prefHeight="34.0" prefWidth="136.0" styleClass="btn-info" stylesheets="@styles.css" text="Update" />
                     
                 </children>
             </HBox>
@@ -106,7 +104,7 @@
     <bottom>
         <HBox id="footer-section" alignment="CENTER" minHeight="100.0" prefHeight="100.0" prefWidth="853.0" BorderPane.alignment="CENTER">
             <children>
-                <Label fx:id="footerLabel" alignment="CENTER" prefHeight="31.0" prefWidth="313.0" styleClass="footer" stylesheets="@demo.css" text="">
+                <Label fx:id="footerLabel" alignment="CENTER" prefHeight="31.0" prefWidth="313.0" styleClass="footer" stylesheets="@demo.css" text="Copyright 2022 Dr. Samir Hamada">
                     <font>
                         <Font name="Arial" size="12.0" />
                     </font>
