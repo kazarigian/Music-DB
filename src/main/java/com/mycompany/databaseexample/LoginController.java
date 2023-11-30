@@ -45,11 +45,10 @@ public class LoginController {
         String userNameText = user_name.getText();
         String passwordText = password.getText();
 
-        String jdbcUrl = "jdbc:sqlserver://localhost:1433;databaseName=Songs;encrypt=true;trustServerCertificate=true;";
-        String dbUser = "sa";
-        String dbPassword = "123";
+        String jdbcUrl = "jdbc:sqlserver://localhost:1433;databaseName=Music;user=sa;password=123";
+   
 
-        try ( Connection connection = DriverManager.getConnection(jdbcUrl, dbUser, dbPassword)) {
+        try ( Connection connection = DriverManager.getConnection(jdbcUrl)) {
 
             String sql = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
 
