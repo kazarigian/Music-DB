@@ -92,6 +92,8 @@
                         <Button mnemonicParsing="false" onAction="#handleSearchArtist" prefHeight="34.0" prefWidth="99.0" styleClass="btn-warning" stylesheets="@styles.css" text="Search" />
                         <Button mnemonicParsing="false" onAction="#handleShowAllArtists" prefHeight="34.0" prefWidth="136.0" styleClass="btn-success" stylesheets="@styles.css" text="Show All Artists" />
                         <Button mnemonicParsing="false" onAction="#handleUpdateArtist" prefHeight="34.0" prefWidth="136.0" styleClass="btn-info" stylesheets="@styles.css" text="Update" />
+                        <Button fx:id="nonRepeatableReadButton" mnemonicParsing="false" onAction="#handleNonRepeatableRead" prefHeight="34.0" prefWidth="136.0" styleClass="btn-success" stylesheets="@styles.css" text="Non-Repeatable Read" />
+
                     </children>
                 </HBox>
             </children>
