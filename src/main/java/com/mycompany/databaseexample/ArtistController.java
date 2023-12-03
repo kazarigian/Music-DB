@@ -62,6 +62,9 @@ public class ArtistController implements Initializable {
         createSQLiteTable();
     }
 
+    //the database below is what was connected to my personal laptop, i used that database to make the non repeatable read transaction
+    //String databaseURL = "jdbc:sqlserver://localhost:1433;databaseName=CustomersDatabase;user=Jalaun2;password=sa;";
+    //the database below is the one that Kiara is using, I don't want to change it and i'm not sure what to replace it with
     String databaseURL = "jdbc:sqlite:src/main/resources/com/mycompany/databaseexample/music.db";
 
     /* Connect to a sample database
@@ -511,6 +514,65 @@ System.out.println("Name: " + nameTextField.getText() + "\nGenre: " + genreTextF
                 tableView.refresh();
             }
         }
-    }   
+    }
+
+    private void handleNonRepeatableRead(ActionEvent event) {
+   Connection conn = null;
+    String initialArtistName = "";
+    try {
+        // Open a connection
+        conn = DriverManager.getConnection(databaseURL);
+        conn.setAutoCommit(false); // Begin transaction block
+
+        // Part 1: First Read - Get the initial state of the data
+        Statement stmt1 = conn.createStatement();
+        ResultSet rs1 = stmt1.executeQuery("SELECT * FROM artist WHERE id = 1");
+        if (rs1.next()) {
+            initialArtistName = rs1.getString("name");
+            System.out.println("Initial Artist name: " + initialArtistName);
+        } else {
+            System.out.println("No artist found with ID 1");
+            footerLabel.setText("No artist found with ID 1");
+            return; // Exit if no artist is found
+        }
+
+        // Part 2: Update - Simulate a change by another transaction
+        Statement stmt2 = conn.createStatement();
+        stmt2.executeUpdate("UPDATE artist SET name = 'New Name' WHERE id = 1");
+        // Do not commit yet if you want to simulate a pending change during the second read
+
+        // Part 3: Second Read - Get the updated state of the data
+        ResultSet rs2 = stmt1.executeQuery("SELECT * FROM artist WHERE id = 1");
+        if (rs2.next()) {
+            String updatedArtistName = rs2.getString("name");
+            System.out.println("Updated Artist name: " + updatedArtistName);
+
+            // Check if non-repeatable read occurred
+            if (!initialArtistName.equals(updatedArtistName)) {
+                footerLabel.setText("NRR:\"" + initialArtistName + "\" to \"" + updatedArtistName + "\"");
+            } else {
+                footerLabel.setText("No non-repeatable read condition detected.");
+            }
+        }
+
+        conn.commit(); // Commit the transaction
+    } catch (SQLException e) {
+        e.printStackTrace();
+        footerLabel.setText("SQL Error: " + e.getMessage());
+    } finally {
+        try {
+            if (conn != null) {
+                conn.setAutoCommit(true); // Reset to default behavior
+                conn.close(); // Close the connection
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+private void displayMessage(String message) {
+    // Update your GUI here with the message, for example:
+    footerLabel.setText(message);
+}
     
 }
