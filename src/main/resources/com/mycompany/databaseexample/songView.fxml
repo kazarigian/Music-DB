@@ -61,6 +61,9 @@
                   <URL value="@styles.css" />
                </stylesheets>
             </Label>
+            <Button fx:id="lostUpdate1Button" onAction="#lostUpdate1" styleClass="btn-info" text="lostUpdate1" stylesheets="@styles.css" />
+            <Button fx:id="lostUpdate2Button" onAction="#lostUpdate2" styleClass="btn-info" text="lostUpdate2" stylesheets="@styles.css" />
+
             </children>
         </VBox>
     </left>
