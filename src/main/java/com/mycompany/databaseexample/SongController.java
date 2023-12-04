@@ -574,5 +574,65 @@ public class SongController implements Initializable {
             }
         }
     }   
-    
+        //lostupdate1 causes the gui to freeze so you cannot click
+    //lostupdate2 while lostupdate1 is running!
+@FXML
+private void lostUpdate1(ActionEvent event) {
+    Connection conn = null;
+    try {
+        conn = DriverManager.getConnection(databaseURL);
+        conn.setAutoCommit(false); // Start transaction block
+
+        // Transaction 1: First Read
+        Statement stmt1 = conn.createStatement();
+        ResultSet rs1 = stmt1.executeQuery("SELECT title FROM songs WHERE id = 1"); // Assuming 'id = 1' is the correct identifier
+        String originalTitle = rs1.next() ? rs1.getString("title") : null;
+        
+        // Simulate delay
+        Thread.sleep(10000);
+        footerLabel.setText("Sleep pressed");
+
+        
+
+        // Transaction 1: Update after delay
+        if(originalTitle != null) {
+            String newTitle1 = "If this is the title, there was a lost update!";
+            stmt1.executeUpdate("UPDATE songs SET title = '" + newTitle1 + "' WHERE id = 1");
+            footerLabel.setText("T1:Title is '" + newTitle1 + "'");
+        }
+
+        conn.commit();
+    } catch (SQLException | InterruptedException e) {
+        e.printStackTrace();
+        footerLabel.setText("Transaction 1 Error: " + e.getMessage());
+    } finally {
+        // Close connections
+        if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+    }
+}
+
+@FXML
+private void lostUpdate2(ActionEvent event) {
+    Connection conn = null;
+    try {
+        conn = DriverManager.getConnection(databaseURL);
+        conn.setAutoCommit(false); // Start transaction block
+
+        // Transaction 2: Update Immediately
+        Statement stmt2 = conn.createStatement();
+        String newTitle2 = "Originally Intended Song Title";
+        stmt2.executeUpdate("UPDATE songs SET title = '" + newTitle2 + "' WHERE id = 1");
+        footerLabel.setText("T2:Title is '" + newTitle2 + "'");
+
+        conn.commit();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        footerLabel.setText("Transaction 2 Error: " + e.getMessage());
+    } finally {
+        // Close connections
+        if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+    }
+}
+
+
 }
