@@ -516,6 +516,7 @@ System.out.println("Name: " + nameTextField.getText() + "\nGenre: " + genreTextF
         }
     }
 
+    @FXML
     private void handleNonRepeatableRead(ActionEvent event) {
    Connection conn = null;
     String initialArtistName = "";
