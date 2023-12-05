@@ -697,6 +697,60 @@ private void phantomRead2(ActionEvent event){
     }
     
 }
+    @FXML
+private void deadlock1(ActionEvent event) {
+    Connection conn = null;
+    try {
+        conn = DriverManager.getConnection(databaseURL);
+        conn.setAutoCommit(false); // Start transaction block
+
+        // Transaction 1: Update the first row
+        Statement stmt1 = conn.createStatement();
+        stmt1.executeUpdate("UPDATE songs SET title = 'Updated by T1' WHERE id = 1");
+        System.out.println("Transaction 1 has locked the first row.");
+
+        // Simulate delay
+        Thread.sleep(5000); // 5 seconds delay
+
+        // Transaction 1: Attempt to update the second row
+        stmt1.executeUpdate("UPDATE songs SET title = 'Updated by T1' WHERE id = 2");
+        System.out.println("Transaction 1 has locked the second row.");
+
+        conn.commit();
+    } catch (SQLException | InterruptedException e) {
+        e.printStackTrace();
+        footerLabel.setText("Transaction 1 Error: " + e.getMessage());
+    } finally {
+        // Close connections
+        if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+    }
+}
+
+@FXML
+private void deadlock2(ActionEvent event) {
+    Connection conn = null;
+    try {
+        conn = DriverManager.getConnection(databaseURL);
+        conn.setAutoCommit(false); // Start transaction block
+
+        // Transaction 2: Update the second row
+        Statement stmt2 = conn.createStatement();
+        stmt2.executeUpdate("UPDATE songs SET title = 'Updated by T2' WHERE id = 2");
+        System.out.println("Transaction 2 has locked the second row.");
+
+        // No delay here, we attempt to lock the first row immediately
+        stmt2.executeUpdate("UPDATE songs SET title = 'Updated by T2' WHERE id = 1");
+        System.out.println("Transaction 2 has locked the first row.");
+
+        conn.commit();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        footerLabel.setText("Transaction 2 Error: " + e.getMessage());
+    } finally {
+        // Close connections
+        if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+    }
+}
 
 
 }
