@@ -651,7 +651,7 @@ private void phantomRead1(ActionEvent event){
         // Simulate delay
         Thread.sleep(10000); //10 second delay
 
-        // Execute the second SELECT statement
+        // Execute second SELECT statement
         ResultSet rs2 = stmt1.executeQuery("SELECT COUNT(*) AS songCount FROM songs");
         rs2.next();
         int newCount = rs2.getInt("songCount");
