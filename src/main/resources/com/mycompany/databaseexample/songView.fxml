@@ -63,6 +63,10 @@
             </Label>
             <Button fx:id="lostUpdate1Button" onAction="#lostUpdate1" styleClass="btn-info" text="lostUpdate1" stylesheets="@styles.css" />
             <Button fx:id="lostUpdate2Button" onAction="#lostUpdate2" styleClass="btn-info" text="lostUpdate2" stylesheets="@styles.css" />
+            <Button fx:id="phantomRead1" onAction="#phantomRead1" styleClass="btn-warning" text="phantomRead1" stylesheets="@styles.css" />
+            <Button fx:id="phantomRead2" onAction="#phantomRead2" styleClass="btn-warning" text="phantomRead2" stylesheets="@styles.css" />
+
+
 
             </children>
         </VBox>
