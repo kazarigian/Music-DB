@@ -588,7 +588,7 @@ private void lostUpdate1(ActionEvent event) {
         ResultSet rs1 = stmt1.executeQuery("SELECT title FROM songs WHERE id = 1"); // Assuming 'id = 1' is the correct identifier
         String originalTitle = rs1.next() ? rs1.getString("title") : null;
         
-        // Simulate delay
+        //  delay
         Thread.sleep(10000);
         footerLabel.setText("Sleep pressed");
 
@@ -649,7 +649,7 @@ private void phantomRead1(ActionEvent event){
         System.out.println("Initial song count: " + initialCount);
 
         // Simulate delay
-        Thread.sleep(10000); // Delays for 10 seconds
+        Thread.sleep(10000); //10 second delay
 
         // Execute the second SELECT statement
         ResultSet rs2 = stmt1.executeQuery("SELECT COUNT(*) AS songCount FROM songs");
@@ -659,14 +659,14 @@ private void phantomRead1(ActionEvent event){
         System.out.println("New song count after delay: " + initialCount);
 
 
-        conn.commit(); // Commit the transaction
+        conn.commit(); // Commit transaction
     } catch (SQLException | InterruptedException e) {
         e.printStackTrace();
         footerLabel.setText("Error: " + e.getMessage());
     } finally {
         try {
             if (conn != null) {
-                conn.setAutoCommit(true); // Reset to default behavior
+                conn.setAutoCommit(true); 
                 conn.close(); // Close the connection
             }
         } catch (SQLException e) {
@@ -681,7 +681,7 @@ private void phantomRead2(ActionEvent event){
         conn = DriverManager.getConnection(databaseURL);
         Statement stmt2 = conn.createStatement();
         
-        // Insert a new song (adjust values as needed)
+        // Insert new song)
         stmt2.executeUpdate("INSERT INTO songs (title, albumId, album) VALUES ('New Song', 1, 'New Album')");
         footerLabel.setText("New song inserted.");
         
@@ -704,7 +704,7 @@ private void deadlock1(ActionEvent event) {
         conn = DriverManager.getConnection(databaseURL);
         conn.setAutoCommit(false); // Start transaction block
 
-        // Transaction 1: Update the first row
+        // Transaction 1: Update first row
         Statement stmt1 = conn.createStatement();
         stmt1.executeUpdate("UPDATE songs SET title = 'Updated by T1' WHERE id = 1");
         System.out.println("Transaction 1 has locked the first row.");
@@ -733,12 +733,12 @@ private void deadlock2(ActionEvent event) {
         conn = DriverManager.getConnection(databaseURL);
         conn.setAutoCommit(false); // Start transaction block
 
-        // Transaction 2: Update the second row
+        // Transaction 2: Update  second row
         Statement stmt2 = conn.createStatement();
         stmt2.executeUpdate("UPDATE songs SET title = 'Updated by T2' WHERE id = 2");
         System.out.println("Transaction 2 has locked the second row.");
 
-        // No delay here, we attempt to lock the first row immediately
+        // lock  first row immediately
         stmt2.executeUpdate("UPDATE songs SET title = 'Updated by T2' WHERE id = 1");
         System.out.println("Transaction 2 has locked the first row.");
 
@@ -750,6 +750,64 @@ private void deadlock2(ActionEvent event) {
         // Close connections
         if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
     }
+}
+
+    @FXML
+private void dirtyRead1(ActionEvent event){
+    Connection conn = null;
+    try {
+        conn = DriverManager.getConnection(databaseURL);
+        conn.setAutoCommit(false); // Begin transaction block
+
+        // Update a record but do not commit immediately
+        Statement stmt1 = conn.createStatement();
+        stmt1.executeUpdate("UPDATE songs SET title = 'Uncommitted Title' WHERE id = 1");
+        footerLabel.setText("dirtyRead1: Updated but not committed");
+
+        // not committing.
+        // conn.commit();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        footerLabel.setText("dirtyRead1 Error: " + e.getMessage());
+    } finally {
+        try {
+            if (conn != null) {
+                // conn.commit(); /
+                conn.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+}
+@FXML
+private void dirtyRead2(ActionEvent event){
+    
+       Connection conn = null;
+    try {
+        conn = DriverManager.getConnection(databaseURL);
+        // Set transaction isolation level to READ_UNCOMMITTED to allow dirty reads
+        conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+        Statement stmt2 = conn.createStatement();
+
+        // Read the uncommitted data
+        ResultSet rs2 = stmt2.executeQuery("SELECT title FROM songs WHERE id = 1");
+        if (rs2.next()) {
+            String title = rs2.getString("title");
+            footerLabel.setText("this is uncommitted: " + title);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        footerLabel.setText("dirtyRead2 Error: " + e.getMessage());
+    } finally {
+        try {
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
 }
 
 
