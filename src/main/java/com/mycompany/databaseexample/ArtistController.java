@@ -518,6 +518,7 @@ System.out.println("Name: " + nameTextField.getText() + "\nGenre: " + genreTextF
 
     @FXML
     private void handleNonRepeatableRead(ActionEvent event) {
+        //For the nonrepeatableread method I used one button instead of two and broke it down into steps
    Connection conn = null;
     String initialArtistName = "";
     try {
@@ -525,7 +526,7 @@ System.out.println("Name: " + nameTextField.getText() + "\nGenre: " + genreTextF
         conn = DriverManager.getConnection(databaseURL);
         conn.setAutoCommit(false); // Begin transaction block
 
-        // Part 1: First Read - Get the initial state of the data
+        // Part 1: First Read 
         Statement stmt1 = conn.createStatement();
         ResultSet rs1 = stmt1.executeQuery("SELECT * FROM artist WHERE id = 1");
         if (rs1.next()) {
@@ -534,15 +535,15 @@ System.out.println("Name: " + nameTextField.getText() + "\nGenre: " + genreTextF
         } else {
             System.out.println("No artist found with ID 1");
             footerLabel.setText("No artist found with ID 1");
-            return; // Exit if no artist is found
+            return; // Exit if no artist  found
         }
 
-        // Part 2: Update - Simulate a change by another transaction
+        // Part 2: Update 
         Statement stmt2 = conn.createStatement();
         stmt2.executeUpdate("UPDATE artist SET name = 'New Name' WHERE id = 1");
-        // Do not commit yet if you want to simulate a pending change during the second read
+        //not committing
 
-        // Part 3: Second Read - Get the updated state of the data
+        // Part 3: Second Read 
         ResultSet rs2 = stmt1.executeQuery("SELECT * FROM artist WHERE id = 1");
         if (rs2.next()) {
             String updatedArtistName = rs2.getString("name");
@@ -563,7 +564,7 @@ System.out.println("Name: " + nameTextField.getText() + "\nGenre: " + genreTextF
     } finally {
         try {
             if (conn != null) {
-                conn.setAutoCommit(true); // Reset to default behavior
+                conn.setAutoCommit(true);
                 conn.close(); // Close the connection
             }
         } catch (SQLException e) {
@@ -572,7 +573,7 @@ System.out.println("Name: " + nameTextField.getText() + "\nGenre: " + genreTextF
     }
 }
 private void displayMessage(String message) {
-    // Update your GUI here with the message, for example:
+    // display message
     footerLabel.setText(message);
 }
     
