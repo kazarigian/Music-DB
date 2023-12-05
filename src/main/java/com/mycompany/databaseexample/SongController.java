@@ -633,6 +633,70 @@ private void lostUpdate2(ActionEvent event) {
         if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
     }
 }
+    @FXML
+private void phantomRead1(ActionEvent event){
+    Connection conn = null;
+    try {
+        conn = DriverManager.getConnection(databaseURL);
+        conn.setAutoCommit(false); // Start the transaction block
+
+        // Execute the first SELECT statement
+        Statement stmt1 = conn.createStatement();
+        ResultSet rs1 = stmt1.executeQuery("SELECT COUNT(*) AS songCount FROM songs");
+        rs1.next();
+        int initialCount = rs1.getInt("songCount");
+        footerLabel.setText("Initial song count: " + initialCount);
+        System.out.println("Initial song count: " + initialCount);
+
+        // Simulate delay
+        Thread.sleep(10000); // Delays for 10 seconds
+
+        // Execute the second SELECT statement
+        ResultSet rs2 = stmt1.executeQuery("SELECT COUNT(*) AS songCount FROM songs");
+        rs2.next();
+        int newCount = rs2.getInt("songCount");
+        footerLabel.setText("New song count after delay: " + newCount);
+        System.out.println("New song count after delay: " + initialCount);
+
+
+        conn.commit(); // Commit the transaction
+    } catch (SQLException | InterruptedException e) {
+        e.printStackTrace();
+        footerLabel.setText("Error: " + e.getMessage());
+    } finally {
+        try {
+            if (conn != null) {
+                conn.setAutoCommit(true); // Reset to default behavior
+                conn.close(); // Close the connection
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+@FXML
+private void phantomRead2(ActionEvent event){
+    Connection conn = null;
+    try {
+        conn = DriverManager.getConnection(databaseURL);
+        Statement stmt2 = conn.createStatement();
+        
+        // Insert a new song (adjust values as needed)
+        stmt2.executeUpdate("INSERT INTO songs (title, albumId, album) VALUES ('New Song', 1, 'New Album')");
+        footerLabel.setText("New song inserted.");
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+        footerLabel.setText("Error: " + e.getMessage());
+    } finally {
+        try {
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+}
 
 
 }
