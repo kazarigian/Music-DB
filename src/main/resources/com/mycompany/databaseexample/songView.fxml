@@ -16,7 +16,7 @@
     <top>
         <BorderPane styleClass="header-section" stylesheets="@demo.css">
             <left>
-                <Label id="header-text" text="Databae Application Using Java FXML" />
+                <Label id="header-text" text="Database Application Using Java FXML" />
             </left>
             <right>
                 <Button id="account" text="Account">
