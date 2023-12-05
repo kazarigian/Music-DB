@@ -67,6 +67,9 @@
             <Button fx:id="phantomRead2" onAction="#phantomRead2" styleClass="btn-warning" text="phantomRead2" stylesheets="@styles.css" />
             <Button fx:id="deadlock1" onAction="#deadlock1" styleClass="btn-danger" text="deadlock1" stylesheets="@styles.css" />
             <Button fx:id="deadlock2" onAction="#deadlock2" styleClass="btn-danger" text="deadlock2" stylesheets="@styles.css" />
+            <Button fx:id="dirtyRead1" onAction="#dirtyRead1" styleClass="btn-info" text="dirtyRead1" stylesheets="@styles.css" />
+            <Button fx:id="dirtyRead2" onAction="#dirtyRead2" styleClass="btn-info" text="dirtyRead2" stylesheets="@styles.css" />
+
 
 
 
